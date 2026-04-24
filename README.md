@@ -16,9 +16,8 @@
 
 ## 📺 Demo
 
-> **▶ [Watch on YouTube — Full Walkthrough](https://youtube.com/your-link-here)**  
-> *(Replace this link with your video URL)*
 
+[![Watch on YouTube — Full Walkthrough](https://img.youtube.com/vi/XzsbHHNRMUg/0.jpg)](https://youtu.be/XzsbHHNRMUg)
 ---
 
 ## What Is It?
