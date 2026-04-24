@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobCopilot AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="sidepanel.css" />
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">🎯</div>
+      <div>
+        <div class="logo-name">JobCopilot <span class="logo-ai">AI</span></div>
+        <div class="logo-sub">Tech · ML · Research</div>
+      </div>
+    </div>
+    <div id="status-dot" class="status-dot" title="Backend status"></div>
+  </header>
+
+  <!-- ── Tab Bar ───────────────────────────────────────────────────────── -->
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-tab="profile" id="tab-profile">
+      <span class="tab-icon">👤</span> Profile
+    </button>
+    <button class="tab-btn" data-tab="analyze" id="tab-analyze">
+      <span class="tab-icon">🔍</span> Analyze
+    </button>
+    <button class="tab-btn" data-tab="dashboard" id="tab-dashboard">
+      <span class="tab-icon">📊</span> Dashboard
+    </button>
+  </nav>
+
+  <!-- ──────────────────────────────────────────────────────────────────── -->
+  <!-- TAB 1: PROFILE (Knowledge Vault)                                    -->
+  <!-- ──────────────────────────────────────────────────────────────────── -->
+  <section class="tab-content active" id="tab-content-profile">
+    <div class="section-label">Knowledge Vault</div>
+
+    <!-- Resume Upload -->
+    <div class="card">
+      <div class="card-title">📄 Resume (PDF)</div>
+      <div id="drop-zone" class="drop-zone">
+        <div class="drop-icon">⬆️</div>
+        <div class="drop-text">Drop your PDF resume here</div>
+        <div class="drop-sub">or <label for="resume-input" class="file-label">browse</label></div>
+        <input type="file" id="resume-input" accept=".pdf" style="display:none" />
+      </div>
+      <div id="resume-status" class="status-msg"></div>
+    </div>
+
+    <!-- GitHub -->
+    <div class="card">
+      <div class="card-title">🐙 GitHub Profile</div>
+      <div class="input-row">
+        <input type="url" id="github-input" class="text-input" placeholder="https://github.com/username" />
+        <button id="github-btn" class="btn btn-secondary">Load</button>
+      </div>
+      <div id="github-status" class="status-msg"></div>
+    </div>
+
+    <!-- Preferences -->
+    <div class="card">
+      <div class="card-title">🎯 Job Preferences</div>
+      <textarea
+        id="prefs-input"
+        class="text-area"
+        rows="3"
+        placeholder="e.g. Research Engineer or PhD in London or remote, Computer Vision, £70k+, open to sponsorship"
+      ></textarea>
+    </div>
+
+    <!-- Model selector -->
+    <div class="card">
+      <div class="card-title">🤖 Gemini Model</div>
+      <div class="input-row">
+        <select id="model-select" class="text-input select-input">
+          <option value="gemini-2.0-flash">gemini-2.0-flash (fast)</option>
+          <option value="gemini-2.5-flash-preview-04-17">gemini-2.5-flash (latest)</option>
+          <option value="gemini-1.5-pro">gemini-1.5-pro (deep)</option>
+        </select>
+      </div>
+      <div class="input-row" style="margin-top:6px">
+        <input type="text" id="model-custom" class="text-input" placeholder="Or type a model name…" />
+      </div>
+    </div>
+
+    <button id="save-profile-btn" class="btn btn-primary full-width">Save Profile</button>
+    <div id="profile-saved-msg" class="status-msg center"></div>
+  </section>
+
+  <!-- ──────────────────────────────────────────────────────────────────── -->
+  <!-- TAB 2: ANALYZE (Reasoning Chain)                                    -->
+  <!-- ──────────────────────────────────────────────────────────────────── -->
+  <section class="tab-content" id="tab-content-analyze">
+
+    <!-- Detected job context pill -->
+    <div id="job-context-card" class="context-card hidden">
+      <div class="context-source" id="context-source-badge">LinkedIn</div>
+      <div class="context-job-title" id="context-job-title">Job Title</div>
+      <div class="context-company" id="context-company">Company · Location</div>
+    </div>
+
+    <!-- Query input -->
+    <div class="card">
+      <div class="card-title">💬 Research Query</div>
+      <textarea
+        id="query-input"
+        class="text-area"
+        rows="2"
+        placeholder="e.g. Analyze this job posting for me, or 'Find ML researcher jobs in Berlin'"
+      ></textarea>
+      <button id="analyze-btn" class="btn btn-primary full-width" style="margin-top:10px">
+        <span id="analyze-btn-text">⚡ Run Analysis</span>
+      </button>
+    </div>
+
+    <!-- Reasoning chain timeline -->
+    <div id="chain-container" class="chain-container hidden">
+      <div class="chain-header">Agent Reasoning Chain</div>
+      <div id="chain-steps" class="chain-steps"></div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────────────────────────────────── -->
+  <!-- TAB 3: DASHBOARD (Action Dashboard)                                 -->
+  <!-- ──────────────────────────────────────────────────────────────────── -->
+  <section class="tab-content" id="tab-content-dashboard">
+
+    <div id="dashboard-empty" class="empty-state">
+      <div class="empty-icon">📊</div>
+      <div class="empty-text">Run an analysis to populate the dashboard</div>
+    </div>
+
+    <div id="dashboard-content" class="hidden">
+
+      <!-- Fit Scorecard -->
+      <div class="card score-card">
+        <div class="score-ring-wrap">
+          <svg class="score-ring" viewBox="0 0 120 120">
+            <circle class="ring-bg" cx="60" cy="60" r="50" />
+            <circle id="ring-progress" class="ring-progress" cx="60" cy="60" r="50"
+              stroke-dasharray="314" stroke-dashoffset="314" />
+          </svg>
+          <div class="score-center">
+            <span id="score-number" class="score-number">--</span>
+            <span class="score-label">/100</span>
+          </div>
+        </div>
+        <div class="score-right">
+          <div class="score-title">Fit Score</div>
+          <div id="score-verdict" class="score-verdict">—</div>
+          <div class="score-bars" id="score-bars"></div>
+        </div>
+      </div>
+
+      <!-- Company Insights -->
+      <div class="card" id="company-card">
+        <div class="card-title">🏢 Company Insights</div>
+        <div id="company-content"></div>
+      </div>
+
+      <!-- Salary Benchmark -->
+      <div class="card" id="salary-card">
+        <div class="card-title">💰 Salary Benchmark</div>
+        <div id="salary-content"></div>
+      </div>
+
+      <!-- Visa Info -->
+      <div class="card" id="visa-card">
+        <div class="card-title">🛂 Visa & Language Requirements</div>
+        <div id="visa-content"></div>
+      </div>
+
+      <!-- Resume Bullets -->
+      <div class="card" id="bullets-card">
+        <div class="card-title">📝 Targeted Resume Bullets</div>
+        <ul id="bullets-list" class="bullet-list"></ul>
+      </div>
+
+      <!-- Cover Letter -->
+      <div class="card" id="cover-card">
+        <div class="card-title">✉️ Cover Letter Points</div>
+        <ol id="cover-list" class="cover-list"></ol>
+      </div>
+
+      <!-- Reverse Interview -->
+      <div class="card" id="interview-card">
+        <div class="card-title">🎤 Reverse Interview Cheat Sheet</div>
+        <ol id="interview-list" class="interview-list"></ol>
+      </div>
+
+    </div>
+  </section>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>
