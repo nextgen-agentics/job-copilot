@@ -180,49 +180,6 @@ python main.py
 
 ---
 
-## 📁 Project Structure
-
-```
-job-copilot/
-├── extension/
-│   ├── manifest.json         Chrome MV3 manifest
-│   ├── background.js         Service worker
-│   ├── content.js            Auto job extractor (injected into pages)
-│   ├── sidepanel.html        3-tab UI
-│   ├── sidepanel.css         Dark glassmorphism styles
-│   ├── sidepanel.js          UI logic, SSE consumer, dashboard renderer
-│   ├── create_icons.py       Icon generator (pure Python, no deps)
-│   └── icons/                Generated PNG icons (16, 48, 128px)
-│
-└── backend/
-    ├── main.py               FastAPI app — routes + SSE stream
-    ├── agent.py              Multi-step agent loop
-    ├── requirements.txt
-    ├── .env.example
-    └── tools/
-        ├── __init__.py       TOOLS registry + sync_model()
-        ├── job_search.py     Arbeitnow + Remotive
-        ├── github_parser.py  GitHub API
-        ├── company_insights.py
-        ├── salary_data.py
-        ├── visa_checker.py
-        ├── fit_scorer.py     LLM-powered scoring
-        └── resume_parser.py  LLM-powered PDF parsing
-```
-
-
----
-
-## 🧩 How Resume Parsing Works
-
-When you upload a PDF:
-1. **PyMuPDF** extracts the raw text from every page
-2. The raw text is sent to **Gemini** with a structured extraction prompt
-3. Gemini returns a JSON object: name, email, education list, experience list, skills array, GitHub URL, professional summary
-4. This structured data is stored in the backend session and injected into every agent prompt — the agent never needs to call a parse tool
-
----
-
 ## 📄 License
 
 MIT — see [LICENSE](LICENSE).
